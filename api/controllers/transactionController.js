@@ -5,8 +5,8 @@ var mongoose = require('mongoose'),
     Transaction = mongoose.model('Transactions');
 
 exports.getAll = function (req, res) {
-    const userId = req.params.userId;
-    Transaction.find({userId: userId}, function (err, transaction) {
+    const playerId = req.params.playerId;
+    Transaction.find({ playerId: playerId }, function (err, txs) {
         if (err)
             res.send(err);
         res.json(transaction);
@@ -19,7 +19,7 @@ exports.getAll = function (req, res) {
 exports.process = function (req, res) {
     // todo add validation etc
     var transaction = new Transaction(req.body);
-    transaction.userId = req.params.userId;
+    transaction.playerId = req.params.playerId;
     transaction.save(function (err, tran) {
         if (err)
             res.send(err);
