@@ -2,6 +2,8 @@ let testHelper = require('./helper');
 let expect = testHelper.expect;
 let request = testHelper.request;
 
+let mongoose = require('mongoose');
+
 let server = require('../server');
 let Transaction = require('../api/models/transaction');
 
@@ -70,6 +72,44 @@ describe('GET /api/:playerId/transations', () => {
 
       done();
     })
+  })
+  // it('returns 401 for unauthenticated user', (done) => {})
+  // it('returns 403 for user with insufficient scopes', (done) => {})
+})
+
+describe('GET /api/:playerId/transactions/:transactionId', () => {
+  const txId = mongoose.Types.ObjectId().toString();
+  it('returns 404 if transaction doesn\'t exist', (done) => {
+    request(server).get(`/api/${playerId}/transactions/${txId}`).send().end((err, res) => {
+      expect(err).to.be.null;
+      expect(res).to.have.status(404);
+      done();
+    })
+  })
+
+  it('returns 404 if transaction for given player doesn\'t exist', (done) => {
+    request(server).get(`/api/${player2Id}/transactions/${tx1._id.toString()}`).send().end((err, res) => {
+      expect(err).to.be.null;
+      expect(res).to.have.status(404);
+      done();
+    })
+  })
+
+  it('returns single player\'s transaction', (done) => {
+    request(server).get(`/api/${playerId}/transactions/${tx1._id.toString()}`).send().end((err, res) => {
+      expect(err).to.be.null;
+      expect(res).to.have.status(200);
+      expect(res).to.be.json;
+
+      const tx = res.body;
+      expect(tx.id).to.eql(tx1._id.toString());
+      expect(tx.status).to.eql(tx1.status);
+      expect(tx.amount).to.eql(tx1.amount);
+      expect(new Date(tx.createdDate)).to.eql(tx1.createdDate);
+
+      done();
+    })
+
   })
 
   // it('returns 401 for unauthenticated user', (done) => {})

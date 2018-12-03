@@ -38,9 +38,16 @@ exports.process = function (req, res) {
 
 
 exports.get = function (req, res) {
-    Transaction.findById(req.params.transactionId, function (err, transaction) {
-        if (err)
-            res.send(err);
-        res.json(transaction);
+    Transaction.find({
+        _id: req.params.transactionId,
+        playerId: req.params.playerId
+    }, function (err, txs) {
+        if (err) res.send(err);
+        if (txs.length !== 1) {
+            res.status(404).json({ error: "Not found" })
+        }
+        else {
+            res.json(txToJson(txs[0]));
+        }
     });
 };
