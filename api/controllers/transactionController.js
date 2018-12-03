@@ -4,12 +4,21 @@
 var mongoose = require('mongoose'),
     Transaction = mongoose.model('Transactions');
 
+const txToJson = (tx) => {
+    return {
+        id: tx._id,
+        amount: tx.amount,
+        status: tx.status,
+        createdDate: tx.createdDate,
+    }
+}
+
 exports.getAll = function (req, res) {
     const playerId = req.params.playerId;
-    Transaction.find({ playerId: playerId }, function (err, txs) {
+    Transaction.find({ playerId: playerId }).sort({ createdDate: 'desc' }).exec(function (err, txs) {
         if (err)
             res.send(err);
-        res.json(transaction);
+        res.json(txs.map(txToJson));
     });
 };
 
