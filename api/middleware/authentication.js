@@ -12,9 +12,7 @@ const checkJwt = (auth0Domain) => jwt({
     jwksUri: `https://${auth0Domain}/.well-known/jwks.json`
   }),
 
-  // TODO: validate the audience (once we have the API ID).
-  // audience: 'YOUR_API_IDENTIFIER',
-  // Vaidate the issuer.
+  audience: 'rozrywki2018',
   issuer: `https://${auth0Domain}/`,
   algorithms: ['RS256']
 });
