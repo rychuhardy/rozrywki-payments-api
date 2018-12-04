@@ -27,3 +27,5 @@ routes(app);
 app.listen(port);
 
 console.log('Payments API server started on: ' + port);
+
+module.exports = app;

@@ -5,9 +5,9 @@ var Schema = mongoose.Schema;
 
 var TransactionSchema = new Schema({
 
-    userId: {
+    playerId: {
         type: String,
-        required: 'userId is required'
+        required: 'playerId is required'
     },
 
     amount: {

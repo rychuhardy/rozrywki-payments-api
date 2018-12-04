@@ -4,12 +4,21 @@
 var mongoose = require('mongoose'),
     Transaction = mongoose.model('Transactions');
 
+const txToJson = (tx) => {
+    return {
+        id: tx._id,
+        amount: tx.amount,
+        status: tx.status,
+        createdDate: tx.createdDate,
+    }
+}
+
 exports.getAll = function (req, res) {
-    const userId = req.params.userId;
-    Transaction.find({userId: userId}, function (err, transaction) {
+    const playerId = req.params.playerId;
+    Transaction.find({ playerId: playerId }).sort({ createdDate: 'desc' }).exec(function (err, txs) {
         if (err)
             res.send(err);
-        res.json(transaction);
+        res.json(txs.map(txToJson));
     });
 };
 
@@ -19,7 +28,7 @@ exports.getAll = function (req, res) {
 exports.process = function (req, res) {
     // todo add validation etc
     var transaction = new Transaction(req.body);
-    transaction.userId = req.params.userId;
+    transaction.playerId = req.params.playerId;
     transaction.save(function (err, tran) {
         if (err)
             res.send(err);
@@ -29,9 +38,16 @@ exports.process = function (req, res) {
 
 
 exports.get = function (req, res) {
-    Transaction.findById(req.params.transactionId, function (err, transaction) {
-        if (err)
-            res.send(err);
-        res.json(transaction);
+    Transaction.find({
+        _id: req.params.transactionId,
+        playerId: req.params.playerId
+    }, function (err, txs) {
+        if (err) res.send(err);
+        if (txs.length !== 1) {
+            res.status(404).json({ error: "Not found" })
+        }
+        else {
+            res.json(txToJson(txs[0]));
+        }
     });
 };
