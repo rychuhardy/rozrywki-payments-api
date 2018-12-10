@@ -50,7 +50,7 @@ function topUpAccount(playerId, amount, betId, res) {
             if (err) {
                 throw err;
             }
-            if (tx.paymentStatus === 'completed') {
+            if (tx.paymentStatus === 'completed' && tx.hasWon) {
                 tx.paymentStatus = 'paidOut';
                 transaction.save((saveErr, savedTransaction) => {
                     if(saveErr) {
