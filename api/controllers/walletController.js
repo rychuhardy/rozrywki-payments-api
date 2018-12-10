@@ -99,7 +99,7 @@ function withdraw(playerId, amount, res) {
         }
 
         player.wallet.balance -= amount;
-        player.walled.history.push({
+        player.wallet.history.push({
             type: 'withdraw',
             amount: amount
         });
