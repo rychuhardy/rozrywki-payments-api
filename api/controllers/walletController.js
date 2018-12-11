@@ -17,7 +17,7 @@ exports.get = function(req, res) {
 
 exports.transfer = function(req, res) {
     // this should not be allowed to call by users
-    // this is either for top up account after winning bet, or top up made by cashier, or withdraw money
+    // this is either for top up account after winning bet or when user tops up account with money transfer, or withdraw money
     const body = req.body;
     const playerId = req.params.playerId;
     if (!body) {
@@ -39,7 +39,7 @@ exports.transfer = function(req, res) {
 
 }
 
-// betId is optional
+// betId is optional, returning money from voided or cancelled bet is handled in transactionController
 function topUpAccount(playerId, amount, betId, res) {
     if (amount <= 0) {
         throw 'invalid amount';
@@ -50,8 +50,8 @@ function topUpAccount(playerId, amount, betId, res) {
             if (err) {
                 throw err;
             }
-            if (tx.paymentStatus === 'completed' && tx.hasWon) {
-                tx.paymentStatus = 'paidOut';
+            if (tx.paymentStatus === 'completed' && tx.hasWon && !tx.isPaidOut) {
+                tx.isPaidOut = true;
                 transaction.save((saveErr, savedTransaction) => {
                     if(saveErr) {
                         throw saveErr;

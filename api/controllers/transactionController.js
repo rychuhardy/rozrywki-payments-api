@@ -14,6 +14,7 @@ const txToJson = (tx) => {
 }
 
 exports.getAll = function (req, res) {
+    // todo check if has access
     const playerId = req.params.playerId;
     Transaction.find({ playerId: playerId }).sort({ createdDate: 'desc' }).exec(function (err, txs) {
         if (err)
@@ -22,10 +23,7 @@ exports.getAll = function (req, res) {
     });
 };
 
-
-
-
-exports.process = function (req, res) {
+exports.initialize = function (req, res) {
     // todo add validation etc
     var transaction = new Transaction(req.body);
     transaction.playerId = req.params.playerId;
@@ -38,6 +36,7 @@ exports.process = function (req, res) {
 
 
 exports.get = function (req, res) {
+    // todo check if has access
     Transaction.find({
         _id: req.params.transactionId,
         playerId: req.params.playerId
@@ -51,3 +50,12 @@ exports.get = function (req, res) {
         }
     });
 };
+
+exports.process = function(req, res) {
+    // todo this should not be allowed for player
+
+    // change status of bet
+    // from initalized to: betCancelled, betVoided => update isPaidOut and wallet
+    // from initialized to: completed => update hasWon property
+    res.status(500);
+}

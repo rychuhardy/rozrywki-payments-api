@@ -30,9 +30,14 @@ var TransactionSchema = new Schema({
         default: false
     },
 
+    isPaidOut: {
+        type: Boolean,
+        default: false
+    },
+
     paymentStatus: {
         type: String,
-        enum: ['initialized', 'betCancelled', 'betVoided', 'completed', 'failed', 'paidOut'],
+        enum: ['initialized', 'betCancelled', 'betVoided', 'completed', 'failed'],
         required: 'paymentStatus is required'
     },
 

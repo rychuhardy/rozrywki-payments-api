@@ -5,8 +5,9 @@ module.exports = function (app) {
 
     app.route('/api/:playerId/transactions')
         .get(transactionController.getAll)
-        .post(transactionController.process);
+        .post(transactionController.initialize);
 
     app.route('/api/:playerId/transactions/:transactionId')
-        .get(transactionController.get);
+        .get(transactionController.get)
+        .patch(transactionController.process);
 };
