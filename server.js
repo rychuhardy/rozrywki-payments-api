@@ -3,6 +3,7 @@ var express = require('express'),
     port = process.env.PORT || 3000,
     auth0Domain = process.env.AUTH0_DOMAIN || 'rozrywki2018.auth0.com',
     authentication = require('./api/middleware/authentication'),
+    mongoUrl = process.env.MONGO_URI || 'mongodb://localhost/Payments',
     mongoose = require('mongoose'),
     Task = require('./api/models/transaction'),
     Task2 = require('./api/models/player'),
@@ -11,7 +12,7 @@ var express = require('express'),
     morgan = require('morgan');
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/Payments');
+mongoose.connect(mongoUrl);
 
 morgan.token('user_id', function (req, res) {
     if (req.user !== undefined) return req.user['sub']
