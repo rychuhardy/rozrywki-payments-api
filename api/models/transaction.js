@@ -2,8 +2,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
 var TransactionSchema = new Schema({
+
+    betId: {
+        type: String,
+        required: 'betId is required'
+    },
+
 
     playerId: {
         type: String,
@@ -11,16 +16,29 @@ var TransactionSchema = new Schema({
     },
 
     amount: {
-        type: Number,
+        type: Schema.Types.Decimal128,
         required: 'amount is required'
     },
 
-    status: {
-        type: [{
-            type: String,
-            enum: ['initialized', 'cancelled', 'voided', 'completed', 'failed']
-        }],
-        required: 'type is required'
+    isAnonymousBet: {
+        type: Boolean,
+        required: ['isAnonymousBet is required']
+    },
+
+    hasWon: {
+        type: Boolean,
+        default: false
+    },
+
+    isPaidOut: {
+        type: Boolean,
+        default: false
+    },
+
+    paymentStatus: {
+        type: String,
+        enum: ['initialized', 'betCancelled', 'betVoided', 'completed', 'failed'],
+        required: 'paymentStatus is required'
     },
 
     createdDate: {
