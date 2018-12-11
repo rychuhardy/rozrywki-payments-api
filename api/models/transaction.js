@@ -20,6 +20,11 @@ var TransactionSchema = new Schema({
         required: 'amount is required'
     },
 
+    isAnonymousBet: {
+        type: Boolean,
+        required: ['isAnonymousBet is required']
+    },
+
     hasWon: {
         type: Boolean,
         default: false
