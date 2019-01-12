@@ -14,7 +14,10 @@ var express = require('express'),
     morgan = require('morgan');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(mongoUri, { user: mongoUsername, pass: mongoPassword });
+connOpts = {}
+if (mongoUsername !== undefined) connOpts.user = mongoUsername;
+if (mongoPassword !== undefined) connOpts.user = mongoPassword;
+mongoose.connect(mongoUri, connOpts);
 
 morgan.token('user_id', function (req, res) {
     if (req.user !== undefined) return req.user['sub']
