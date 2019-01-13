@@ -25,14 +25,6 @@ var WalletTransactionSchema = new Schema({
 
 });
 
-var WalletSchema = new Schema({
-    balance: {
-        type: Number,
-        default: 0
-    },
-
-    history: [WalletTransactionSchema]
-});
 
 var PlayerSchema = new Schema({
 
@@ -42,7 +34,14 @@ var PlayerSchema = new Schema({
         unique: true
     },
 
-    wallet: WalletSchema,
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0
+        },
+
+        walletTransactions: [WalletTransactionSchema]
+    },
 
     createdDate: {
         type: Date,
