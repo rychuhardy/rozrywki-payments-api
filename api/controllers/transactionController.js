@@ -3,6 +3,7 @@
 
 var mongoose = require('mongoose'),
     Transaction = mongoose.model('Transactions');
+    Player = mongoose.model('Players')
 
 const txToJson = (tx) => {
     return {
@@ -72,6 +73,50 @@ exports.process = function(req, res) {
 
     // change status of bet
     // from initalized to: betCancelled, betVoided => update isPaidOut and wallet
-    // from initialized to: completed => update hasWon property
-    res.status(500);
+    if(req.body.paymentStatus in ['betCancelled', 'betVoided']) {
+        Transaction.find({
+            _id: req.params.transactionId,
+            playerId: req.params.playerId
+        }, function (err, txs) {
+            if (err) res.send(err);
+            
+            if(txs.paymentStatus !== 'initialized' || txs.isPaidOut) res.status(400).json({error: "Transaction already finalized"});
+
+            txs.paymentStatus = req.body.status;
+            txs.isPaidOut = true;
+
+            Player.findOne({playerId: req.params.playerId}).exec((err, player) => {
+                if (err) {
+                    throw err;
+                }
+
+                player.wallet.balance += txs.amount;
+
+                player.wallet.walletTransactions.push({
+                    type: 'topup',
+                    amount: txs.amount,
+                    betId = txs.betId,
+
+                });
+                player.save((saveErr, savedPlayer) => {
+                    if (saveErr) {
+                        throw saveErr;
+                    }
+                    
+                    txs.save((txsSaveErr, savedTxs) => {
+                        if(txsSaveErr) throw txsSaveErr;
+                        res.json(savedTxs);
+                    })
+
+                });
+
+            });
+
+
+        });
+    }
+    else {
+        res.status(400).json({ error: "Invalid status" })
+    }
+
 }
