@@ -9,10 +9,9 @@ var TransactionSchema = new Schema({
         required: 'betId is required'
     },
 
-
-    playerId: {
+    sourceId: {
         type: String,
-        required: 'playerId is required'
+        required: 'PlayerId if or cashierId if anonymous'
     },
 
     amount: {

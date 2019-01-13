@@ -6,17 +6,26 @@ var mongoose = require('mongoose'),
 
 const txToJson = (tx) => {
     return {
-        id: tx._id,
+        betId: tx.betId,
         amount: tx.amount,
-        status: tx.status,
+        paymentStatus: tx.paymentStatus,
         createdDate: tx.createdDate,
     }
 }
 
-exports.getAll = function (req, res) {
-    // todo check if has access
-    const playerId = req.params.playerId;
-    Transaction.find({ playerId: playerId }).sort({ createdDate: 'desc' }).exec(function (err, txs) {
+exports.getTransactions = function (req, res) {
+    // Query transactions
+    var query = {}
+    if(req.query.sourceId)
+        query.sourceId = req.query.sourceId
+
+    if(req.query.paymentStatus)
+        query.paymentStatus = req.query.paymentStatus
+
+    if(req.query.isAnonymousBet)
+        query.isAnonymousBet = req.query.isAnonymousBet
+
+    Transaction.find(query).sort({ createdDate: 'desc' }).exec(function (err, txs) {
         if (err)
             res.send(err);
         res.json(txs.map(txToJson));
@@ -24,9 +33,16 @@ exports.getAll = function (req, res) {
 };
 
 exports.initialize = function (req, res) {
-    // todo add validation etc
+    // sourceId might be a player or a cashier
     var transaction = new Transaction(req.body);
-    transaction.playerId = req.params.playerId;
+    Transaction.remove(
+        {betId:transaction.betId},
+        function (err) {
+            if (err)
+                res.send(err);
+        }
+    )
+
     transaction.save(function (err, tran) {
         if (err)
             res.send(err);
@@ -36,7 +52,7 @@ exports.initialize = function (req, res) {
 
 
 exports.get = function (req, res) {
-    // todo check if has access
+    // TODO VERIFY IMPLEMENTATION & USE betID AS QUERYPARAM NOT _id from Mongo
     Transaction.find({
         _id: req.params.transactionId,
         playerId: req.params.playerId

@@ -3,11 +3,12 @@
 module.exports = function (app) {
     var transactionController = require('../controllers/transactionController');
 
-    app.route('/api/:playerId/transactions')
-        .get(transactionController.getAll)
+    app.route('/api/transactions')
+        .get(transactionController.getTransactions)
         .post(transactionController.initialize);
 
-    app.route('/api/:playerId/transactions/:transactionId')
+    app.route('/api/transactions/:transactionId')
         .get(transactionController.get)
         .patch(transactionController.process);
+
 };
