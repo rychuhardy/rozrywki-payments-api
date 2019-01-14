@@ -75,17 +75,16 @@ exports.process = function(req, res) {
     // from initalized to: betCancelled, betVoided => update isPaidOut and wallet
     if(req.body.paymentStatus in ['betCancelled', 'betVoided']) {
         Transaction.find({
-            _id: req.params.transactionId,
-            playerId: req.params.playerId
+            betId: req.params.transactionId
         }, function (err, txs) {
             if (err) res.send(err);
             
             if(txs.paymentStatus !== 'initialized' || txs.isPaidOut) res.status(400).json({error: "Transaction already finalized"});
 
-            txs.paymentStatus = req.body.status;
+            txs.paymentStatus = req.body.paymentStatus;
             txs.isPaidOut = true;
 
-            Player.findOne({playerId: req.params.playerId}).exec((err, player) => {
+            Player.findOne({playerId: txs.sourceId}).exec((err, player) => {
                 if (err) {
                     throw err;
                 }
