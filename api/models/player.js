@@ -1,29 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
+var transaction = require('./transaction')
 var Schema = mongoose.Schema;
-
-var WalletTransactionSchema = new Schema({
-    amount: {
-        type: Schema.Types.Decimal128,
-        required: 'amount is required'
-    },
-
-    type: {
-        type: String,
-        enum: ['topup', 'withdraw'],
-        required: 'type is required'
-    },
-
-    createdDate: {
-        type: Date,
-        default: Date.now
-    },
-
-    betId: {
-        type: String
-    }
-
-});
 
 
 var PlayerSchema = new Schema({
@@ -40,7 +18,7 @@ var PlayerSchema = new Schema({
             default: 0
         },
 
-        walletTransactions: [WalletTransactionSchema]
+        walletTransactions: [transaction.WalletTransactionSchema]
     },
 
     createdDate: {

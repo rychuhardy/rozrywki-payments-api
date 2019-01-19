@@ -7,7 +7,7 @@ module.exports = function (app) {
         .get(transactionController.getTransactions)
         .post(transactionController.initialize);
 
-    app.route('/api/transactions/:transactionId')
+    app.route('/api/transactions/:betId')
         .get(transactionController.get)
         .patch(transactionController.process);
 

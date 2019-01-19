@@ -15,5 +15,6 @@ module.exports = function (app) {
 
     app.route('/api/players/:playerId/balance')
         .get(walletController.get)
+
 };
 

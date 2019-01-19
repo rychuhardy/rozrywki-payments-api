@@ -2,6 +2,30 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
+var WalletTransactionSchema = new Schema({
+    amount: {
+        type: Schema.Types.Decimal128,
+        required: 'amount is required'
+    },
+
+    type: {
+        type: String,
+        enum: ['topup', 'withdraw'],
+        required: 'type is required'
+    },
+
+    createdDate: {
+        type: Date,
+        default: Date.now
+    },
+
+    betId: {
+        type: String
+    }
+
+});
+
 var TransactionSchema = new Schema({
 
     betId: {
@@ -10,8 +34,7 @@ var TransactionSchema = new Schema({
     },
 
     sourceId: {
-        type: String,
-        required: 'PlayerId if or cashierId if anonymous'
+        type: String
     },
 
     amount: {
@@ -46,4 +69,7 @@ var TransactionSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Transactions', TransactionSchema);
+module.exports = {
+    'Transactions' : mongoose.model('Transactions', TransactionSchema),
+    'WalletTransactionSchema' : WalletTransactionSchema
+};

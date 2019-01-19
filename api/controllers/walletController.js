@@ -41,8 +41,6 @@ exports.transfer = function (req, res) {
 
 }
 
-
-// betId is optional, returning money from voided or cancelled bet is handled in transactionController
 function topUpAccount(playerId, amount, betId, res) {
     if (body.amount <= 0) {
         return res.status(400).json('Invalid amount')

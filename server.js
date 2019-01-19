@@ -6,6 +6,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     Task = require('./api/models/transaction'),
     Task2 = require('./api/models/player'),
+    Task2 = require('./api/models/cashier'),
     bodyParser = require('body-parser'),
     morgan = require('morgan');
 
@@ -25,8 +26,12 @@ app.use(authentication);
 var transactionRoutes = require('./api/routes/transactionRoutes');
 transactionRoutes(app);
 
-var playerRoutes = require('./api/routes/playerRoutes')
-playerRoutes(app)
+var playerRoutes = require('./api/routes/playerRoutes');
+playerRoutes(app);
+
+var cashierRoutes = require('./api/routes/cashierRoutes');
+cashierRoutes(app);
+
 
 app.listen(port);
 

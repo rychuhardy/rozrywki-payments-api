@@ -3,7 +3,7 @@
 
 var mongoose = require('mongoose'),
     Transaction = mongoose.model('Transactions'),
-    Player = mongoose.model('Players')
+    Player = mongoose.model('Players');
 
 const txToJson = (tx) => {
     return {
@@ -12,19 +12,13 @@ const txToJson = (tx) => {
         paymentStatus: tx.paymentStatus,
         createdDate: tx.createdDate,
     }
-}
+};
+
+exports.txToJson = txToJson;
 
 exports.getTransactions = function (req, res) {
     // Query transactions
-    var query = {}
-    if(req.query.sourceId)
-        query.sourceId = req.query.sourceId
-
-    if(req.query.paymentStatus)
-        query.paymentStatus = req.query.paymentStatus
-
-    if(req.query.isAnonymousBet)
-        query.isAnonymousBet = req.query.isAnonymousBet
+    const query = queryTransactions(req.query.sourceId, req.query.paymentStatus, req.query.isAnonymousBet)
 
     Transaction.find(query).sort({ createdDate: 'desc' }).exec(function (err, txs) {
         if (err)
@@ -32,6 +26,23 @@ exports.getTransactions = function (req, res) {
         res.json(txs.map(txToJson));
     });
 };
+
+exports.queryTransactions = queryTransactions;
+
+function queryTransactions(sourceId, paymentStatus, isAnonymousBet){
+    // Query transactions
+    var query = {};
+    if(sourceId)
+        query.sourceId = sourceId;
+
+    if(paymentStatus)
+        query.paymentStatus = paymentStatus;
+
+    if(isAnonymousBet)
+        query.isAnonymousBet = isAnonymousBet;
+
+    return query;
+}
 
 exports.initialize = function (req, res) {
     // sourceId might be a player or a cashier
@@ -53,9 +64,8 @@ exports.initialize = function (req, res) {
 
 
 exports.get = function (req, res) {
-    // TODO VERIFY IMPLEMENTATION & USE betID AS QUERYPARAM NOT _id from Mongo
     Transaction.find({
-        betId: req.params.transactionId,
+        betId: req.params.betId,
         sourceId: req.params.playerId
     }, function (err, txs) {
         if (err) res.send(err);
@@ -75,7 +85,7 @@ exports.process = function(req, res) {
     // from initalized to: betCancelled, betVoided => update isPaidOut and wallet
     if(req.body.paymentStatus in ['betCancelled', 'betVoided']) {
         Transaction.find({
-            betId: req.params.transactionId
+            betId: req.params.betId
         }, function (err, txs) {
             if (err) res.send(err);
             
@@ -117,5 +127,4 @@ exports.process = function(req, res) {
     else {
         res.status(400).json({ error: "Invalid status" })
     }
-
-}
+};
