@@ -56,7 +56,7 @@ exports.get = function (req, res) {
     // TODO VERIFY IMPLEMENTATION & USE betID AS QUERYPARAM NOT _id from Mongo
     Transaction.find({
         betId: req.params.transactionId,
-        playerId: req.params.playerId
+        sourceId: req.params.playerId
     }, function (err, txs) {
         if (err) res.send(err);
         if (txs.length !== 1) {
