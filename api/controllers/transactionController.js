@@ -55,7 +55,7 @@ exports.initialize = function (req, res) {
 exports.get = function (req, res) {
     // TODO VERIFY IMPLEMENTATION & USE betID AS QUERYPARAM NOT _id from Mongo
     Transaction.find({
-        _id: req.params.transactionId,
+        betId: req.params.transactionId,
         playerId: req.params.playerId
     }, function (err, txs) {
         if (err) res.send(err);
