@@ -2,7 +2,7 @@
 
 
 var mongoose = require('mongoose'),
-    Transaction = mongoose.model('Transactions');
+    Transaction = mongoose.model('Transactions'),
     Player = mongoose.model('Players')
 
 const txToJson = (tx) => {
@@ -94,7 +94,7 @@ exports.process = function(req, res) {
                 player.wallet.walletTransactions.push({
                     type: 'topup',
                     amount: txs.amount,
-                    betId = txs.betId,
+                    betId: txs.betId,
 
                 });
                 player.save((saveErr, savedPlayer) => {
