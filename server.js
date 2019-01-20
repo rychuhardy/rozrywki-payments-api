@@ -24,6 +24,12 @@ morgan.token('user_id', function (req, res) {
 })
 authentication = authentication(auth0Domain);
 
+// Do not require authentication for healthcheck endpoint.
+app.get('/healthz', function (req, res) {
+    res.status(200);
+    res.json({ 'status': 'ok' })
+})
+
 app.use(morgan(':date[iso] :method :url user-id=:user_id status=:status content-length=:res[content-length] - :response-time ms'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -43,7 +49,8 @@ app.use(function (err, req, res, next) {
         return next(err)
     }
     status = err.status || 500
-    res.json(status, { error: err })
+    res.status(status)
+    res.json({ error: err })
     console.error(err.stack)
 });
 
