@@ -38,6 +38,15 @@ playerRoutes(app);
 var cashierRoutes = require('./api/routes/cashierRoutes');
 cashierRoutes(app);
 
+app.use(function (err, req, res, next) {
+    if (res.headersSent) {
+        return next(err)
+    }
+    status = err.status || 500
+    res.json(status, { error: err })
+    console.error(err.stack)
+});
+
 
 app.listen(port);
 

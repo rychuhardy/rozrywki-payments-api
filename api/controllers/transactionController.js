@@ -16,13 +16,12 @@ const txToJson = (tx) => {
 
 exports.txToJson = txToJson;
 
-exports.getTransactions = function (req, res) {
+exports.getTransactions = function (req, res, next) {
     // Query transactions
     const query = queryTransactions(req.query.sourceId, req.query.paymentStatus, req.query.isAnonymousBet)
 
     Transaction.find(query).sort({ createdDate: 'desc' }).exec(function (err, txs) {
-        if (err)
-            res.send(err);
+        if (err) next(err);
         res.json(txs.map(txToJson));
     });
 };
@@ -44,31 +43,29 @@ function queryTransactions(sourceId, paymentStatus, isAnonymousBet){
     return query;
 }
 
-exports.initialize = function (req, res) {
+exports.initialize = function (req, res, err) {
     // sourceId might be a player or a cashier
     var transaction = new Transaction(req.body);
     Transaction.remove(
         {betId:transaction.betId},
         function (err) {
-            if (err)
-                res.send(err);
+            if (err) next(err)
         }
     )
 
     transaction.save(function (err, tran) {
-        if (err)
-            res.send(err);
+        if (err) next(err)
         res.json(tran);
     });
 };
 
 
-exports.get = function (req, res) {
+exports.get = function (req, res, next) {
     Transaction.find({
         betId: req.params.betId,
         sourceId: req.params.playerId
     }, function (err, txs) {
-        if (err) res.send(err);
+        if (err) next(err);
         if (txs.length !== 1) {
             res.status(404).json({ error: "Not found" })
         }
@@ -78,7 +75,7 @@ exports.get = function (req, res) {
     });
 };
 
-exports.process = function(req, res) {
+exports.process = function(req, res, next) {
     // todo this should not be allowed for player
 
     // change status of bet
@@ -88,7 +85,7 @@ exports.process = function(req, res) {
             betId: req.params.betId
         }, function (err, txs) {
             if (err) res.send(err);
-            
+
             if(txs.paymentStatus !== 'initialized' || txs.isPaidOut) res.status(400).json({error: "Transaction already finalized"});
 
             txs.paymentStatus = req.body.paymentStatus;
@@ -96,7 +93,7 @@ exports.process = function(req, res) {
 
             Player.findOne({playerId: txs.sourceId}).exec((err, player) => {
                 if (err) {
-                    throw err;
+                    next(err)
                 }
 
                 player.wallet.balance += txs.amount;
@@ -109,11 +106,11 @@ exports.process = function(req, res) {
                 });
                 player.save((saveErr, savedPlayer) => {
                     if (saveErr) {
-                        throw saveErr;
+                        next(saveErr)
                     }
-                    
+
                     txs.save((txsSaveErr, savedTxs) => {
-                        if(txsSaveErr) throw txsSaveErr;
+                        if(txsSaveErr) next(txsSaveErr);
                         res.json(savedTxs);
                     })
 
