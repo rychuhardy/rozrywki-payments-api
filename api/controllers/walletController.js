@@ -4,17 +4,17 @@ var mongoose = require('mongoose'),
     Player = mongoose.model('Players'),
     Transaction = mongoose.model('Transactions');
 
-exports.get = function (req, res) {
+exports.get = function (req, res, next) {
     const playerId = req.params.playerId;
-    Player.findOne({playerId: playerId}, (err, player) => {
+    Player.findOne({ playerId: playerId }, (err, player) => {
         if (err) {
-            res.send(err);
+            next(err)
         }
         res.json(player.wallet.balance);
     });
 };
 
-exports.transfer = function (req, res) {
+exports.transfer = function (req, res, next) {
     // this should not be allowed to call by users
     // this is either for top up account after winning bet or when user tops up account with money transfer, or withdraw money
     const body = req.body;
@@ -27,10 +27,20 @@ exports.transfer = function (req, res) {
             if (body.amount <= 0) {
                 return res.status(400).json('Invalid amount')
             }
-            withdraw(playerId, body.amount, res);
+            try {
+                withdraw(playerId, body.amount, res);
+            }
+            catch (err) {
+                next(err)
+            }
         }
         else if (body.type === 'topup') {
-            topUpAccount(playerId, body.amount, body.betId, res);
+            try {
+                topUpAccount(playerId, body.amount, body.betId, res);
+            }
+            catch (err) {
+                next(err)
+            }
         }
         else {
             return res.status(400).end();
@@ -47,7 +57,7 @@ function topUpAccount(playerId, amount, betId, res) {
     }
     // TODO CHECK WHEN INTEGRATING WITH BETS (TRANSACTIONS)
     if (betId) {
-        Transaction.findOne({betId: betId}).exec((err, tx) => {
+        Transaction.findOne({ betId: betId }).exec((err, tx) => {
             if (err) {
                 throw err;
             }
@@ -66,7 +76,7 @@ function topUpAccount(playerId, amount, betId, res) {
         });
     }
 
-    Player.findOne({playerId: playerId}, (err, player) => {
+    Player.findOne({ playerId: playerId }, (err, player) => {
         if (err) {
             throw err;
         }
@@ -90,7 +100,7 @@ function withdraw(playerId, amount, res) {
     if (body.amount <= 0) {
         return res.status(400).json('Invalid amount')
     }
-    Player.findOne({playerId: playerId}, (err, player) => {
+    Player.findOne({ playerId: playerId }, (err, player) => {
         if (err) {
             throw err;
         }
