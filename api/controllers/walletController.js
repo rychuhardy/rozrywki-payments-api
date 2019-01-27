@@ -52,7 +52,7 @@ exports.transfer = function (req, res, next) {
 }
 
 function topUpAccount(playerId, amount, betId, res) {
-    if (body.amount <= 0) {
+    if (amount <= 0) {
         return res.status(400).json('Invalid amount')
     }
     // TODO CHECK WHEN INTEGRATING WITH BETS (TRANSACTIONS)
@@ -92,12 +92,11 @@ function topUpAccount(playerId, amount, betId, res) {
             }
             return res.json(savedPlayer.wallet);
         });
-        return res.status(404).end()
     });
 }
 
 function withdraw(playerId, amount, res) {
-    if (body.amount <= 0) {
+    if (amount <= 0) {
         return res.status(400).json('Invalid amount')
     }
     Player.findOne({ playerId: playerId }, (err, player) => {
